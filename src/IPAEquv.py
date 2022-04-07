@@ -1,16 +1,19 @@
-from Tkinter import *
+# -*- coding: utf-8 -*-
+from tkinter import *
 from itertools import groupby
-import tkFileDialog
+import tkinter.filedialog
 import codecs
 import sys
 import re
 import os
 import xlrd
-import tkFont
+import tkinter.font
 import xlsxwriter
 import subprocess
-reload(sys)
-sys.setdefaultencoding('utf-8')
+# import importlib
+# importlib.reload(sys)
+# #reload(sys)
+# sys.setdefaultencoding('utf-8')
 
 #from input import makeform
 ucv = [u'\u092a', u'\u092c', u'\u092b', u'\u092d', u'\u0924', u'\u0926', u'\u0925', u'\u0927', u'\u091f', u'\u0921',
@@ -53,143 +56,130 @@ long_vowel = ["E", "A", "O", "M", "J", "N", "U", "I"]
 short_vowel = ["i", "o", "u", u'\u0259']
 
 def IPAEquivalent(entries):
-
-    global hindi_output
-    hindi_output = ""
-    hindi_input = []
+	global hindi_output
+	hindi_output = ""
+	hindi_input = []
 
     ############################ Input from a file ##################################################################################
+	hindi_input_new = (entries['Hindi Input'].get())
+	hindi_input_array = hindi_input_new.split()
+	for word in hindi_input_array:
+		hindi_input = word
+		length = len(hindi_input)
+		for i in range((len(hindi_input))):
+			for j in range(len(ucv)):
+				if ((hindi_input[i] == ucv[j] and i != length - 1) and (hindi_input[i + 1] == u'\u094d')):  # for halant
+					temp = uipa[j].replace(u'\u0259', "")
+					hindi_output = hindi_output + temp
+					i = i + 1
 
+				if ((hindi_input[i] == ucv[j] and i != length - 1) and (hindi_input[i + 1] == u'\u0943')):  # for ri
+					temp = uipa[j].replace(u'\u0259', "")
+					hindi_output = hindi_output + temp + "ri"
+					i = i + 1
 
-    hindi_input_new = (entries['Hindi Input'].get())
-    hindi_input_array = hindi_input_new.split()
-    for word in hindi_input_array:
-        hindi_input = word
-        length = len(hindi_input)
-        for i in range((len(hindi_input))):
-            for j in range(len(ucv)):
-                if ((hindi_input[i] == ucv[j] and i != length - 1) and (hindi_input[i + 1] == u'\u094d')):  # for halant
-                    temp = uipa[j].replace(u'\u0259', "")
-                    hindi_output = hindi_output + temp
-                    i = i + 1
+				if ((hindi_input[i] == ucv[j] and i != length - 1) and (
+						hindi_input[i + 1] == u'\u0903' and i + 1 == length - 1)):  # for visarg
+					temp = uipa[j]
+					hindi_output = hindi_output + temp + "h"
+					i = i + 1
 
-                if ((hindi_input[i] == ucv[j] and i != length - 1) and (hindi_input[i + 1] == u'\u0943')):  # for ri
-                    temp = uipa[j].replace(u'\u0259', "")
-                    hindi_output = hindi_output + temp + "ri"
-                    i = i + 1
+					# replacing schwa before vowels
+				if (hindi_input[i] == ucv[j]):
+					hindi_output = hindi_output + (uipa[j])
+					hindi_output = hindi_output.replace(u'\u0259u', "u")
+					hindi_output = hindi_output.replace(u'\u0259i', "i")
+					hindi_output = hindi_output.replace(u'\u0259i:', "i:")
+					hindi_output = hindi_output.replace(u'\u0259o:', "o:")
+					hindi_output = hindi_output.replace(u'\u0259a:', "a:")
+					hindi_output = hindi_output.replace(u'\u0259e:', "e:")
+					hindi_output = hindi_output.replace(u'\u0259e:', "e:")
+					hindi_output = hindi_output.replace(u'\u0259\u0254:', u'\u0254:')
+					hindi_output = hindi_output.replace(u'\u0259\xe6:', u'\xe6:')
+					# hindi_output=hindi_output.replace(u'\u0259\u1d14:','u\u1d14:')
+					hindi_output = hindi_output.replace(u'3', "i:")
+					hindi_output = hindi_output.replace(u'2', "i")
+					hindi_output = hindi_output.replace(u'4', "e:")
+		hindi_output_ipa = []
+		hindi_output_ipa = list(hindi_output)
+		for i in range(1, len(hindi_output_ipa)):
+			if (hindi_output_ipa[i - 1] == u'^' and (hindi_output_ipa[i] == u'p' or hindi_output_ipa[i] == u'b')):
+				hindi_output_ipa[i - 1] = "X"  
+			if (hindi_output_ipa[i - 1] == u'^' and (
+					hindi_output_ipa[i] == u'\u0288' or hindi_output_ipa[i] == u'\u0256')):
+				hindi_output_ipa[i - 1] = "X"
+			if (hindi_output_ipa[i - 1] == u'^' and (hindi_output_ipa[i] == u't\u0283' or hindi_output_ipa[i] == u'd\u0292')):
+				hindi_output_ipa[i - 1] = "X"
+			if (hindi_output_ipa[i - 1] == u'^' and (hindi_output_ipa[i] == u'k' or hindi_output_ipa[i] == u'g' or hindi_output_ipa[i] == u'\u0261\u02b1\u0259')):
+				hindi_output_ipa[i - 1] = "X"
+			if (hindi_output_ipa[i - 1] == u'i' and hindi_output_ipa[i] == u'^'):
+				hindi_output_ipa[i] = "X"
+			if (hindi_output_ipa[i - 1] == u'u' and hindi_output_ipa[i] == u'^'):
+				hindi_output_ipa[i] = "X"
+			if (hindi_output_ipa[i - 1] == u'\u0259' and hindi_output_ipa[i] == u'-'):
+				hindi_output_ipa[i - 1] = ""
+				hindi_output_ipa[i] = ""
+			if (hindi_output_ipa[i - 1] != u'\u0259' and hindi_output_ipa[i] == u'-'):
+				hindi_output_ipa[i] = ""
+			if (hindi_output_ipa[i - 1] == u'\u0259' and hindi_output_ipa[i] == u'~'):
+				hindi_output_ipa[i] = "X"
+			if (hindi_output_ipa[i - 1] == u'\u0259' and hindi_output_ipa[i] == u'^'):
+				hindi_output_ipa[i] = "X"
+			if (hindi_output_ipa[i - 1] == u'u' and hindi_output_ipa[i] == u'~'):
+				hindi_output_ipa[i] = "X"
+		for i in range(2, len(hindi_output_ipa)):
+			if (hindi_output_ipa[i - 2] == u'i' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'^'):
+				hindi_output_ipa[i] = ""
+			if (hindi_output_ipa[i - 2] == u'u' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'^'):
+				hindi_output_ipa[i] = "X"
+			if (hindi_output_ipa[i - 2] == u'o' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'^'):
+				hindi_output_ipa[i] = "X"
+			if (hindi_output_ipa[i - 2] == u'\u1d14' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'^'):
+				hindi_output_ipa[i] = "X"
+			if (hindi_output_ipa[i - 2] == u'e' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'^'):
+				hindi_output_ipa[i] = "X"
+			if (hindi_output_ipa[i - 2] == u'\xe6' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'^'):
+				hindi_output_ipa[i] = "X"
+			if (hindi_output_ipa[i - 2] == u'a' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'^'):
+				hindi_output_ipa[i] = "X"
+			if (hindi_output_ipa[i - 2] == u'a' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'~'):
+				hindi_output_ipa[i] = "X"
+			if (hindi_output_ipa[i - 2] == u'u' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'~'):
+				hindi_output_ipa[i] = "X"
+			if (hindi_output_ipa[i - 2] == u'e' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'~'):
+				hindi_output_ipa[i] = "X"
+			if (hindi_output_ipa[i - 2] == u'o' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'~'):
+				hindi_output_ipa[i] = "X"
+			if (hindi_output_ipa[i - 1] == u'\u0259' and hindi_output_ipa[i] == u'\u1d14'):
+				hindi_output_ipa[i - 1] = ""
+			if (hindi_output_ipa[len(hindi_output_ipa) - 1] == "i"):
+				hindi_output_ipa[len(hindi_output_ipa) - 1] = "i:"
+			if (hindi_output_ipa[len(hindi_output_ipa) - 1] == "u"):
+				hindi_output_ipa[len(hindi_output_ipa) - 1] = "u:"
 
-                if ((hindi_input[i] == ucv[j] and i != length - 1) and (
-                        hindi_input[i + 1] == u'\u0903' and i + 1 == length - 1)):  # for visarg
-                    temp = uipa[j]
-                    hindi_output = hindi_output + temp + "h"
-                    i = i + 1
+		hindi_output = ''.join(hindi_output_ipa)
 
-                    # replacing schwa before vowels
-                if (hindi_input[i] == ucv[j]):
-                    hindi_output = hindi_output + (uipa[j])
-                    hindi_output = hindi_output.replace(u'\u0259u', "u")
-                    hindi_output = hindi_output.replace(u'\u0259i', "i")
-                    hindi_output = hindi_output.replace(u'\u0259i:', "i:")
-                    hindi_output = hindi_output.replace(u'\u0259o:', "o:")
-                    hindi_output = hindi_output.replace(u'\u0259a:', "a:")
-                    hindi_output = hindi_output.replace(u'\u0259e:', "e:")
-                    hindi_output = hindi_output.replace(u'\u0259e:', "e:")
-                    hindi_output = hindi_output.replace(u'\u0259\u0254:', u'\u0254:')
-                    hindi_output = hindi_output.replace(u'\u0259\xe6:', u'\xe6:')
-                    # hindi_output=hindi_output.replace(u'\u0259\u1d14:','u\u1d14:')
-                    hindi_output = hindi_output.replace(u'3', "i:")
-                    hindi_output = hindi_output.replace(u'2', "i")
-                    hindi_output = hindi_output.replace(u'4', "e:")
-        hindi_output_ipa = []
-        hindi_output_ipa = list(hindi_output)
-        for i in range(1, len(hindi_output_ipa)):
-            if (hindi_output_ipa[i - 1] == u'^' and (hindi_output_ipa[i] == u'p' or hindi_output_ipa[i] == u'b')):
-                hindi_output_ipa[i - 1] = "X"  
-            if (hindi_output_ipa[i - 1] == u'^' and (
-                    hindi_output_ipa[i] == u'\u0288' or hindi_output_ipa[i] == u'\u0256')):
-                hindi_output_ipa[i - 1] = "X"
-            if (hindi_output_ipa[i - 1] == u'^' and (
-                    hindi_output_ipa[i] == u't\u0283' or hindi_output_ipa[i] == u'd\u0292')):
-                hindi_output_ipa[i - 1] = "X"
-            if (hindi_output_ipa[i - 1] == u'^' and (
-                        hindi_output_ipa[i] == u'k' or hindi_output_ipa[i] == u'g' or hindi_output_ipa[
-                i] == u'\u0261\u02b1\u0259')):
-                hindi_output_ipa[i - 1] = "X"
-            if (hindi_output_ipa[i - 1] == u'i' and hindi_output_ipa[i] == u'^'):
-                hindi_output_ipa[i] = "X"
-            if (hindi_output_ipa[i - 1] == u'u' and hindi_output_ipa[i] == u'^'):
-                hindi_output_ipa[i] = "X"
+		entries['IPA Equivalent'].delete(0, END)
+		entries['IPA Equivalent'].insert(0, hindi_output)
+		countvo = 0
+		countco = 0
+		for char in hindi_output:
+			if char in uvwl:
+				uvwl[char] += 1
+				countvo += 1
+			if not char in uvwl:
+				countco += 1
+		if (hindi_output[-1] == u'\u0259' and countvo > 1):
+			hindi_output = hindi_output[:-1]
+			hindi_output = hindi_output + " "
 
-            if (hindi_output_ipa[i - 1] == u'\u0259' and hindi_output_ipa[i] == u'-'):
-                hindi_output_ipa[i - 1] = ""
-                hindi_output_ipa[i] = ""
-            if (hindi_output_ipa[i - 1] != u'\u0259' and hindi_output_ipa[i] == u'-'):
-                hindi_output_ipa[i] = ""
-            if (hindi_output_ipa[i - 1] == u'\u0259' and hindi_output_ipa[i] == u'~'):
-                hindi_output_ipa[i] = "X"
-            if (hindi_output_ipa[i - 1] == u'\u0259' and hindi_output_ipa[i] == u'^'):
-                hindi_output_ipa[i] = "X"
-            if (hindi_output_ipa[i - 1] == u'u' and hindi_output_ipa[i] == u'~'):
-                hindi_output_ipa[i] = "X"
-        for i in range(2, len(hindi_output_ipa)):
-            if (hindi_output_ipa[i - 2] == u'i' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'^'):
-                hindi_output_ipa[i] = ""
-            if (hindi_output_ipa[i - 2] == u'u' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'^'):
-                hindi_output_ipa[i] = "X"
-            if (hindi_output_ipa[i - 2] == u'o' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'^'):
-                hindi_output_ipa[i] = "X"
-            if (hindi_output_ipa[i - 2] == u'\u1d14' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[
-                i] == u'^'):
-                hindi_output_ipa[i] = "X"
-            if (hindi_output_ipa[i - 2] == u'e' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'^'):
-                hindi_output_ipa[i] = "X"
-            if (hindi_output_ipa[i - 2] == u'\xe6' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'^'):
-               
-                hindi_output_ipa[i] = "X"
-            if (hindi_output_ipa[i - 2] == u'a' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'^'):
-                hindi_output_ipa[i] = "X"
-            if (hindi_output_ipa[i - 2] == u'a' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'~'):
-                hindi_output_ipa[i] = "X"
-            if (hindi_output_ipa[i - 2] == u'u' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'~'):
-                hindi_output_ipa[i] = "X"
-            if (hindi_output_ipa[i - 2] == u'e' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'~'):
-                hindi_output_ipa[i] = "X"
-            if (hindi_output_ipa[i - 2] == u'o' and hindi_output_ipa[i - 1] == u':' and hindi_output_ipa[i] == u'~'):
-                hindi_output_ipa[i] = "X"
-            if (hindi_output_ipa[i - 1] == u'\u0259' and hindi_output_ipa[i] == u'\u1d14'):
-                hindi_output_ipa[i - 1] = ""
-
-            if (hindi_output_ipa[len(hindi_output_ipa) - 1] == "i"):
-                hindi_output_ipa[len(hindi_output_ipa) - 1] = "i:"
-
-            if (hindi_output_ipa[len(hindi_output_ipa) - 1] == "u"):
-                hindi_output_ipa[len(hindi_output_ipa) - 1] = "u:"
-
-        hindi_output = ''.join(hindi_output_ipa)
-
-        entries['IPA Equivalent'].delete(0, END)
-        entries['IPA Equivalent'].insert(0, hindi_output)
-        countvo = 0
-        countco = 0
-        for char in hindi_output:
-            if char in uvwl:
-                uvwl[char] += 1
-                countvo += 1
-            if not char in uvwl:
-                countco += 1
-        if (hindi_output[-1] == u'\u0259' and countvo > 1):
-            hindi_output = hindi_output[:-1]
-            hindi_output = hindi_output + " "
-
-        if (hindi_output[-1] == "i"):
-            hindi_output = hindi_output + ":"
-            entries['Underlying Phonemic Form'].delete(0, END)
-            entries['Underlying Phonemic Form'].insert(0, hindi_output)
-            
-
-        else:
-            entries['Underlying Phonemic Form'].delete(0, END)
-            entries['Underlying Phonemic Form'].insert(0, hindi_output)
+		if (hindi_output[-1] == "i"):
+			hindi_output = hindi_output + ":"
+			entries['Underlying Phonemic Form'].delete(0, END)
+			entries['Underlying Phonemic Form'].insert(0, hindi_output)
+		else:
+			entries['Underlying Phonemic Form'].delete(0, END)
+			entries['Underlying Phonemic Form'].insert(0, hindi_output)
             
 
 
