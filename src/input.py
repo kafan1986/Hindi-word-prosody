@@ -5,10 +5,6 @@ from IPAEquv import IPAEquivalent
 from Syll_label import Labeling
 from filehandling import load_file
 from phoneme import Phoneme
-#import importlib
-#importlib.reload(sys)
-#reload(sys)
-#sys.setdefaultencoding('utf-8')
 fields = ('Hindi Input', 'IPA Equivalent', 'Underlying Phonemic Form', 'I-Level Syllabification', 'Prosodic Label(PLSB)',
 'Phoneme Level(IPA)', 'Phoneme Level(ASCII)')
 
