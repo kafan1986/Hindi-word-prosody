@@ -1,15 +1,6 @@
 # -*- coding: utf-8 -*-
-from tkinter import *
-from itertools import groupby
-import tkinter.filedialog
-import codecs
-import sys
-import re
-import os
-from IPAEquv import IPAEquivalent
-from Labelchang1 import Labelchanger1
+from tkinter import END
 from Labelchang2 import Labelchanger2
-from Syllabification import Syllabify
 from Syll_label import Labeling
 # reload(sys)
 # sys.setdefaultencoding('utf-8')
@@ -38,6 +29,7 @@ count_superstrong_syllable3=0
 superstrong_syll_pos3=[]
 global hindi_output_list
 hindi_output_list=[]
+
 def Phoneme(entries):
 	Labeling(entries)
 	hindi_output=(entries['Prosodic Label(PLSB)'].get()).rstrip()
@@ -110,7 +102,7 @@ def Phoneme(entries):
 	hindi_output_syllab=list(hindi_output_syllab)
 	for i in range (len(hindi_output_syllab)):
 		if(countlabel==2):
-			if(hindi_output_syllab[i]=="@" and hindi_output_syllab[i+2]=="$"  ):
+			if(hindi_output_syllab[i]=="@" and hindi_output_syllab[i+2]=="$"):
 				hindi_output_syllab[i]="1"
 			elif(hindi_output_syllab[i]=="@"):
 				hindi_output_syllab[i]="0"
@@ -125,7 +117,7 @@ def Phoneme(entries):
 				if(hindi_output_syllab[i]=="$"): 
 					hindi_output_syllab[i]="0"
 		if(countlabel>=3):
-			if(hindi_output_syllab[i]=="$" and (hindi_output_syllab[i+2]=="$"  or hindi_output_syllab[i+2]=="@" or hindi_output_syllab[i+2]=="&" )):
+			if(hindi_output_syllab[i]=="$" and i+2 <= len(hindi_output_syllab)-1  and (hindi_output_syllab[i+2]=="$"  or hindi_output_syllab[i+2]=="@" or hindi_output_syllab[i+2]=="&" )):
 				hindi_output_syllab[i]="1"
 			elif(hindi_output_syllab[i]=="$"):
 				hindi_output_syllab[i]="0"
@@ -146,9 +138,10 @@ def Phoneme(entries):
 	hindi_output_syllab=hindi_output_syllab.replace("0",") (0 ")
 	hindi_output_syllab=hindi_output_syllab.replace("1",") (1 ")
 	
-	if hindi_output_syllab[0]==")":
+	if len(hindi_output_syllab) > 1 and hindi_output_syllab[0]==")":
 		hindi_output_syllab=hindi_output_syllab[1:]
 		hindi_output_syllab=hindi_output_syllab+")"
+	#print("Phoneme Level(ASCII) 1: ",hindi_output_syllab)
 	entries['Phoneme Level(ASCII)'].delete(0,END)
 	entries['Phoneme Level(ASCII)'].insert(0,hindi_output_syllab)
   
@@ -157,8 +150,8 @@ def Phoneme(entries):
 		if(hindi_output1[i]=="$"):
 			count_final_strong_syll=count_final_strong_syll+1
 			final_strong_syll.append(i)
-	print(final_strong_syll)
-	print(count_final_strong_syll)
+	#print(final_strong_syll)
+	#print(count_final_strong_syll)
 	
 	if (count_weak_syllable+count_strong_syllable+count_superstrong_syllable==2):
 		for i in range(len(hindi_output1)):
@@ -173,7 +166,7 @@ def Phoneme(entries):
 		hindi_output_syllab=hindi_output_syllab.replace("&",u'\u03c3\u02e2\u02b0')
 		hindi_output_syllab=hindi_output_syllab.replace("*",u'<\u03c3\u02e2>')
 		hindi_output_syllab=Labelchanger2(hindi_output_syllab)
-		
+		#print("Phoneme Level(ASCII) 2: ",hindi_output_syllab)
 		entries['Phoneme Level(ASCII)'].delete(0,END)
 		entries['Phoneme Level(ASCII)'].insert(0,hindi_output_syllab)
 
@@ -225,9 +218,7 @@ def Phoneme(entries):
 	hindi_output_syllab=hindi_output_syllab.replace("&",u'\u03c3\u02e2\u02b0')
 	hindi_output_syllab=hindi_output_syllab.replace("*",u'<\u03c3\u02e2>')
 	hindi_output_syllab=Labelchanger2(hindi_output_syllab)
-	print (hindi_output_syllab)
+	#print ("output syllable: ", hindi_output_syllab)
 
 	entries['Phoneme Level(IPA)'].delete(0,END)
 	entries['Phoneme Level(IPA)'].insert(0,hindi_output_syllab)
-
-  
