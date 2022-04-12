@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from tkinter import *
+from tkinter import END
 import tkinter.filedialog
 import os
 import subprocess
