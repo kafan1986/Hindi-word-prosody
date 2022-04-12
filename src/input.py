@@ -1,15 +1,5 @@
 # -*- coding: utf-8 -*-
 from tkinter import *
-from itertools import groupby
-import tkinter.filedialog
-import codecs
-import sys
-import re
-import os
-import xlrd
-import tkinter.font
-import xlsxwriter
-import subprocess
 from Syllabification import Syllabify
 from IPAEquv import IPAEquivalent
 from Syll_label import Labeling
