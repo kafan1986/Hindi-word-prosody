@@ -2,8 +2,7 @@
 from tkinter import END
 from Labelchang2 import Labelchanger2
 from Syll_label import Labeling
-# reload(sys)
-# sys.setdefaultencoding('utf-8')
+
 global hindi_output
 hindi_output = []
 global hindi_output1
